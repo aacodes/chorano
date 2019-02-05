@@ -10,7 +10,11 @@ The project consists of two modules with a parent pom file at the root.
 
 **Module 2 (chorano-servers):** A chorano server is a lightweight server which listens to a user-specified port number. The server handles incoming HTTP requests by utilizing worker threads from a fixed thread pool. The server writes back a (*hardcoded*) http response with http status 200(OK). 
 
-**Demo:** In our demo we will start with three chorano-servers and one chorano-client. Using the client we will load balance the http requests to the three chorano-servers. We will shutdown the servers one by one and observe how the client keeps routing the requests only to the active servers.
+**How does it work ?**
+
+Whenever we start a chorano-server, the server program register itself in zookeeper under the root path/znode `/chorano` as a child (e.g. `/chorano/x_1`) via the zookeeper client object. Then it keeps on listening to a port for incoming streams of data. The `/chorano` is a persistent node in zookeeper while the children znodes(servers) `e.g. x_1` are ephemeral znode. This means when a server is shut down the corresponding znode disappears in zookeeper. On the other hand, the chorano-client keeps a watch at the `/chorano` path and gets notified of any changes (e.g. a shutdown or an addition or location change of a server) via the zookeeper client object. Note: both the client and servers need to know *only* the root path i.e. `/chorano` but do not need to know the children paths. This is okay since both the client and server code will be maintained by the same developer(s). As soon as the chorano-client gets notified it updates the list of active servers so that subsequent http requests are sent only them. When all the servers are shutdown the client exits.
+
+**Demo:** In our demo we will play around with three chorano-servers and one chorano-client. Using the client we will load balance the http requests to the three chorano-servers. We will shutdown the servers one by one and observe how the client keeps routing the requests only to the active servers.
 
 **Cloning and building the project:**
 
