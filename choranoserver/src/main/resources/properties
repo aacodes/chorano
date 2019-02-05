@@ -1,0 +1,2 @@
+request.handler.thread.pool.size=30
+zkclient.connection=localhost:2181

@@ -1,0 +1,2 @@
+zkclient.connection=localhost:2181
+http.request.count=100
